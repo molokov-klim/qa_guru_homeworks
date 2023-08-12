@@ -10,4 +10,5 @@ def test_no_search_results(browser_configured):
     browser.element('//*[@id="botstuff"]/div/div[2]/div/p[1]').should(have.text(f'По запросу {random_string} ничего не найдено.'))
 
 
+print("homework_3 конфликт pull-request")
 
