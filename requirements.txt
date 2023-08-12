@@ -1,4 +1,4 @@
 selene==2.0.0rc4
 pytest==7.4.0
-
+selenium==4.11.2
 

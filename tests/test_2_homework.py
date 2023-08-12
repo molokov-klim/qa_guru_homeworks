@@ -2,8 +2,8 @@
 from selene import be, have
 
 
-def test_homework_2(browser_configured):
-    browser = browser_configured
+def test_homework_2(browser_density):
+    browser = browser_density
     browser.open('https://google.com')
     random_string = "uyfihfhgfxcjkjhkljljkhjfgfchghvkjggfhhglkgfgdjvhjklllkl,lkjhjghfgcjh"
     browser.element('[name="q"]').should(be.blank).type(random_string).press_enter()
