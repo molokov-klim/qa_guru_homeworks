@@ -1,14 +1,18 @@
 # coding: utf-8
+import logging
+
 import pytest
 from selene.support.shared import browser
 from selene import browser
 from selenium import webdriver
+from selenium.common import WebDriverException
 
 
 @pytest.fixture(scope="session")
 def browser_density(request):
     browser.config.window_width = 1920
     browser.config.window_height = 1080
+
     def browser_finalizer(browser):
         """
         Функция финализации после выполнения теста.
@@ -16,7 +20,11 @@ def browser_density(request):
         Args:
             browser: Объект WebDriver для работы с браузером.
         """
-        browser.close()  # Закрытие браузера
+        try:
+            browser.quit()  # Закрытие браузера
+        except WebDriverException as e:
+            logging.error("Browser is already closed or crashed")
+
     yield browser
     request.addfinalizer(lambda: browser_finalizer(browser))
 
@@ -43,7 +51,10 @@ def browser_headless(request):
         Args:
             browser: Объект WebDriver для работы с браузером.
         """
-        browser.close()  # Закрытие браузера
+        try:
+            browser.quit()  # Закрытие браузера
+        except WebDriverException as e:
+            logging.error("Browser is already closed or crashed")
 
     yield browser
     request.addfinalizer(lambda: browser_finalizer(browser))
