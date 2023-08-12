@@ -4,8 +4,8 @@ from selene import be, have
 from pages.page_automation_practice_form import PageAutomationPracticeForm
 
 
-def test_main_positive(browser_density):
-    page = PageAutomationPracticeForm(browser_density)
+def test_main_positive(browser_den):
+    page = PageAutomationPracticeForm(browser_den)
 
     page.first_name.should(be.blank).type('Klim')
     page.last_name.should(be.blank).type('Molokov')
