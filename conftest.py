@@ -2,7 +2,6 @@
 import logging
 
 import pytest
-from selene.support.shared import browser
 from selene import browser
 from selenium import webdriver
 from selenium.common import WebDriverException
