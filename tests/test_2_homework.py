@@ -11,4 +11,3 @@ def test_no_search_results(browser_configured):
 
 
 print("homework_3 конфликт pull-request")
-
