@@ -8,7 +8,7 @@ from selenium.common import WebDriverException
 
 
 @pytest.fixture(scope="session")
-def browser_density(request):
+def browser_den(request):
     browser.config.window_width = 1920
     browser.config.window_height = 1080
 
@@ -57,3 +57,6 @@ def browser_headless(request):
 
     yield browser
     request.addfinalizer(lambda: browser_finalizer(browser))
+
+
+
