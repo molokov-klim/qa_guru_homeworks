@@ -111,10 +111,6 @@ def test_xlsx():
 
 
 def test_ziprar():
-    # TODO 2.
-    #  Создать новые тесты, которые заархивируют имеющиеся в resources различные типы файлов в
-    #  один архив в tmp и проверят тестом в архиве каждый из файлов, что он является тем самым,
-    #  который был заархивирован, не распаковывая архив.
     test_data = os.path.join(SCRIPT_DIR, 'test_data')
     resources = os.path.join(SCRIPT_DIR, 'resources')
     tmp = os.path.join(SCRIPT_DIR, 'tmp')
