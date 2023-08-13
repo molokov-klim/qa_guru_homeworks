@@ -57,3 +57,6 @@ def browser_headless(request):
 
     yield browser
     request.addfinalizer(lambda: browser_finalizer(browser))
+
+
+
