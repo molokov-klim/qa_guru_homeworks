@@ -91,7 +91,6 @@ def pretty_string(*args):
     arg_name = ", ".join([*args])
     arg = f'[{arg_name}]'
 
-    # method_name = str(inspect.stack()[1].function)
     actual_result = f"{method_name.title()} {arg.title() if 'https' not in arg else arg}".replace('_', " ")
     print(actual_result)
     return actual_result
