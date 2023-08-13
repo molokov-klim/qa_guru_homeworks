@@ -82,13 +82,17 @@ def test_find_suitable_user():
 # "Open Browser [Chrome]"
 
 def pretty_string(*args):
-    if len(args) > 1:
-        arg = "[" + ", ".join(str(a) for a in args) + "]"
-    else:
-        arg = "[" + str(*args) + "]"
+    """
+    Первый позиционный аргумент - ссылка на функцию
+    """
+    method_name = args[0].__name__
+    args = args[1:]
 
-    method_name = str(inspect.stack()[1].function)
-    actual_result = f"{method_name.title()} {arg}".replace('_', " ")
+    arg_name = ", ".join([*args])
+    arg = f'[{arg_name}]'
+
+    # method_name = str(inspect.stack()[1].function)
+    actual_result = f"{method_name.title()} {arg.title() if 'https' not in arg else arg}".replace('_', " ")
     print(actual_result)
     return actual_result
 
@@ -100,15 +104,15 @@ def test_readable_function():
 
 
 def open_browser(browser_name):
-    actual_result = pretty_string(browser_name)
+    actual_result = pretty_string(open_browser, browser_name)
     assert actual_result == "Open Browser [Chrome]"
 
 
 def go_to_companyname_homepage(page_url):
-    actual_result = pretty_string(page_url)
+    actual_result = pretty_string(go_to_companyname_homepage, page_url)
     assert actual_result == "Go To Companyname Homepage [https://companyname.com]"
 
 
 def find_registration_button_on_login_page(page_url, button_text):
-    actual_result = pretty_string(page_url, button_text)
+    actual_result = pretty_string(find_registration_button_on_login_page, page_url, button_text)
     assert actual_result == "Find Registration Button On Login Page [https://companyname.com/login, Register]"
