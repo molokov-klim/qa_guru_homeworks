@@ -1,3 +1,6 @@
+from typing import cast
+
+
 class Product:
     """
     Класс продукта
@@ -7,35 +10,73 @@ class Product:
     description: str
     quantity: int
 
-    def __init__(self, name, price, description, quantity):
-        self.name = name
-        self.price = price
-        self.description = description
-        self.quantity = quantity
+    _instances = {}  # словарь для хранения экземпляров
 
-    def check_quantity(self, quantity) -> bool:
-        """
-        TODO Верните True если количество продукта больше или равно запрашиваемому
-            и False в обратном случае
-        """
-        raise NotImplementedError
+    def __new__(cls, name: str, price: float, description: str, quantity: int):
+        temp_instance = super().__new__(cls)
+        temp_instance.name = name
+        temp_instance.price = price
 
-    def buy(self, quantity):
-        """
-        TODO реализуйте метод покупки
-            Проверьте количество продукта используя метод check_quantity
-            Если продуктов не хватает, то выбросите исключение ValueError
-        """
-        raise NotImplementedError
+        key = temp_instance.__hash__()
+
+        if key in cls._instances:
+            return cls._instances[key]
+
+        cls._instances[key] = temp_instance
+        return temp_instance
+
+    def __init__(self, name: str, price: float, description: str, quantity: int):
+        if self.__hash__() not in Product._instances:
+            self.description = description
+            self.quantity = quantity
 
     def __hash__(self):
         return hash(self.name + self.description)
+
+    def __str__(self):
+        return f"{self.name} - {self.description} - ${self.price}"
+
+    def __repr__(self):
+        return f"Product('{self.name}', {self.price}, '{self.description}', {self.quantity})"
+
+    def __eq__(self, other):
+        if isinstance(other, Product):
+            return self.name == other.name and self.description == other.description
+        return False
+
+    def check_quantity(self, quantity: int) -> bool:
+        """
+        Метод проверки наличия запрашиваемого количество товара на складе.
+        Args:
+            quantity (int): запрашиваемое количество товара
+        Returns:
+            True если количество продукта больше или равно запрашиваемому,
+            False в ином случае
+        """
+        if self.quantity >= quantity:
+            return True
+        return False
+
+    def buy(self, quantity: int) -> 'Product':
+        """
+        Метод покупки товара.
+
+        Args:
+            quantity (int): покупаемое количество товара
+        Returns:
+            self
+        Raises:
+            ValueError, если количество товара на складе недостаточно
+        """
+        if not self.check_quantity(quantity):
+            raise ValueError("Невозможно совершить покупку. Товара на складе недостаточно")
+        self.quantity -= 1
+        return cast('Product', self)
 
 
 class Cart:
     """
     Класс корзины. В нем хранятся продукты, которые пользователь хочет купить.
-    TODO реализуйте все методы класса
     """
 
     # Словарь продуктов и их количество в корзине
@@ -45,31 +86,79 @@ class Cart:
         # По-умолчанию корзина пустая
         self.products = {}
 
-    def add_product(self, product: Product, buy_count=1):
+    def add_product(self, product: Product, buy_count: int = 1) -> 'Cart':
         """
         Метод добавления продукта в корзину.
-        Если продукт уже есть в корзине, то увеличиваем количество
-        """
-        raise NotImplementedError
+        Если продукт уже есть в корзине, то увеличивает количество.
 
-    def remove_product(self, product: Product, remove_count=None):
+        Args:
+            product (Product): добавляемый товар.
+            buy_count (int): количество добавляемого товара.
+        Returns:
+            self
+        """
+        if product.__hash__() in self.products:
+            self.products[product] += buy_count
+            return cast('Cart', self)
+        self.products[product] = buy_count
+        return cast('Cart', self)
+
+    def remove_product(self, product: Product, remove_count: int = None) -> 'Cart':
         """
         Метод удаления продукта из корзины.
         Если remove_count не передан, то удаляется вся позиция
         Если remove_count больше, чем количество продуктов в позиции, то удаляется вся позиция
+        Args:
+            product (Product): удаляемый товар.
+            remove_count (int): количество удаляемого товара.
+        Returns:
+            self
         """
-        raise NotImplementedError
+        if remove_count > self.products[product] or remove_count is None:
+            del self.products[product]
+            return cast('Cart', self)
+        self.products[product] -= remove_count
+        return cast('Cart', self)
 
-    def clear(self):
-        raise NotImplementedError
+    def clear(self) -> 'Cart':
+        """
+        Метод очистки корзины.
+        Returns:
+            self
+        """
+        self.products.clear()
+        return cast('Cart', self)
 
     def get_total_price(self) -> float:
-        raise NotImplementedError
+        """
+        Метод получения суммы стоимостей товаров в корзине.
+        Returns:
+            float - сумма стоимостей товаров
+        """
+        amount = 0
+        for price in self.products.values():
+            amount += price
+        return amount
 
-    def buy(self):
+    def buy(self) -> 'Cart':
         """
         Метод покупки.
         Учтите, что товаров может не хватать на складе.
         В этом случае нужно выбросить исключение ValueError
+
+        Returns:
+            self
         """
-        raise NotImplementedError
+        for product, quantity in self.products.items():
+            if not product.check_quantity(quantity):
+                raise ValueError(f"Товара {product} недостаточно на складе. Остаток: {quantity}")
+        assert self.process_payment()
+        for product, quantity in self.products.items():
+            product.buy(quantity)
+        self.clear()
+        return cast('Cart', self)
+
+    def process_payment(self):
+        amount = self.get_total_price()
+        ...
+        return True
