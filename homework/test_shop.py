@@ -1,14 +1,21 @@
 """
 Протестируйте классы из модуля homework/models.py
 """
+
 import pytest
 
 from homework.models import Product
+from homework.providers import CsvProductProvider, DatabaseProductProvider, ApiProductProvider, ProductProvider
+
+
+@pytest.fixture(params=[CsvProductProvider, DatabaseProductProvider, ApiProductProvider])
+def provider(request) -> ProductProvider:
+    return request.param()
 
 
 @pytest.fixture
-def product():
-    return Product("book", 100, "This is a book", 1000)
+def product(provider) -> list[Product]:
+    return provider.get_products()
 
 
 class TestProducts:

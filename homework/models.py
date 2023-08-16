@@ -70,7 +70,7 @@ class Product:
         """
         if not self.check_quantity(quantity):
             raise ValueError("Невозможно совершить покупку. Товара на складе недостаточно")
-        self.quantity -= 1
+        self.quantity -= quantity
         return cast('Product', self)
 
 
@@ -97,6 +97,8 @@ class Cart:
         Returns:
             self
         """
+        if buy_count < 0:
+            raise ValueError("Некорректное количество товара")
         if product.__hash__() in self.products:
             self.products[product] += buy_count
             return cast('Cart', self)
@@ -114,10 +116,12 @@ class Cart:
         Returns:
             self
         """
-        if remove_count > self.products[product] or remove_count is None:
-            del self.products[product]
+        if product not in self.products:
             return cast('Cart', self)
-        self.products[product] -= remove_count
+        if remove_count is None or remove_count >= self.products[product]:
+            del self.products[product]
+        else:
+            self.products[product] -= remove_count
         return cast('Cart', self)
 
     def clear(self) -> 'Cart':
@@ -136,8 +140,8 @@ class Cart:
             float - сумма стоимостей товаров
         """
         amount = 0
-        for price in self.products.values():
-            amount += price
+        for product, quantity in self.products.items():
+            amount += product.price * quantity
         return amount
 
     def buy(self) -> 'Cart':
@@ -160,5 +164,5 @@ class Cart:
 
     def process_payment(self):
         amount = self.get_total_price()
-        ...
+        # payment mock
         return True
