@@ -16,6 +16,8 @@ class Product:
         temp_instance = super().__new__(cls)
         temp_instance.name = name
         temp_instance.price = price
+        temp_instance.description = description
+        temp_instance.quantity = quantity
 
         key = temp_instance.__hash__()
 
@@ -27,6 +29,8 @@ class Product:
 
     def __init__(self, name: str, price: float, description: str, quantity: int):
         if self.__hash__() not in Product._instances:
+            self.name = name
+            self.price = price
             self.description = description
             self.quantity = quantity
 
@@ -34,10 +38,10 @@ class Product:
         return hash(self.name + self.description)
 
     def __str__(self):
-        return f"{self.name} - {self.description} - ${self.price}"
+        return f"Product('{self.name=}', {self.price=}, '{self.description=}', {self.quantity=})"
 
     def __repr__(self):
-        return f"Product('{self.name}', {self.price}, '{self.description}', {self.quantity})"
+        return f"Product('{self.name=}', {self.price=}, '{self.description=}', {self.quantity=})"
 
     def __eq__(self, other):
         if isinstance(other, Product):
@@ -86,6 +90,12 @@ class Cart:
         # По-умолчанию корзина пустая
         self.products = {}
 
+    def __str__(self):
+        return f"Cart('{self.products=}') # item: quantity"
+
+    def __repr__(self):
+        return f"Cart('{self.products=}') # item: quantity"
+
     def add_product(self, product: Product, buy_count: int = 1) -> 'Cart':
         """
         Метод добавления продукта в корзину.
@@ -97,11 +107,13 @@ class Cart:
         Returns:
             self
         """
-        if buy_count < 0:
+
+        if buy_count <= 0:
             raise ValueError("Некорректное количество товара")
-        if product.__hash__() in self.products:
+        if product in self.products:
             self.products[product] += buy_count
             return cast('Cart', self)
+
         self.products[product] = buy_count
         return cast('Cart', self)
 
