@@ -1,3 +1,6 @@
+"""
+Модуль для управления продуктами и корзиной покупок.
+"""
 from typing import cast
 
 
@@ -174,7 +177,12 @@ class Cart:
         self.clear()
         return cast('Cart', self)
 
-    def process_payment(self):
-        amount = self.get_total_price()
+    def process_payment(self) -> bool:
+        """
+        Заглушка для метода проведения оплаты.
+        Returns:
+            True
+        """
+        self.get_total_price()
         # payment mock
         return True
